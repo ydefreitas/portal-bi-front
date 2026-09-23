@@ -575,33 +575,8 @@ const Dashboard = ({ onLogout, onGoToAdmin, currentUser }: DashboardProps) => {
                     onClick={() => setPowerbiCollapsed(c => !c)}
                     className="w-full flex items-center gap-2 mb-4 border-b border-border/70 pb-2 group text-left"
                   >
-                    <svg className="h-4 w-4 flex-shrink-0" viewBox="0 0 1200 1600" fill="none">
-                      <defs>
-                        <linearGradient id="pbi_paint0" x1="650" y1="0" x2="1200" y2="1600" gradientUnits="userSpaceOnUse">
-                          <stop stopColor="#E6AD10" />
-                          <stop offset="1" stopColor="#C87E0E" />
-                        </linearGradient>
-                        <linearGradient id="pbi_paint1" x1="325" y1="400" x2="875" y2="1600" gradientUnits="userSpaceOnUse">
-                          <stop stopColor="#F6D751" />
-                          <stop offset="1" stopColor="#E6AD10" />
-                        </linearGradient>
-                        <linearGradient id="pbi_paint2" x1="0" y1="800" x2="550" y2="1600" gradientUnits="userSpaceOnUse">
-                          <stop stopColor="#F9E589" />
-                          <stop offset="1" stopColor="#F6D751" />
-                        </linearGradient>
-                      </defs>
-                      <path
-                        d="M 1200,66.75 v 1466.5 c 0,36.86 -29.89,66.75 -66.75,66.75 H 716.75 C 679.885,1600 650,1570.11 650,1533.25 V 66.75 C 650,29.885 679.885,0 716.75,0 h 416.5 c 36.87,0 66.75,29.8849 66.75,66.75 z"
-                        fill="url(#pbi_paint0)"
-                      />
-                      <path
-                        d="M 875,466.667 V 1600 H 325 V 466.667 C 325,429.848 354.848,400 391.667,400 h 416.663 c 36.82,0 66.67,29.848 66.67,66.667 z"
-                        fill="url(#pbi_paint1)"
-                      />
-                      <path
-                        d="m 0,866.667 v 666.663 c 0,36.82 29.848,66.67 66.667,66.67 H 550 V 866.667 C 550,829.848 520.152,800 483.333,800 H 66.667 C 29.848,800 0,829.848 0,866.667 Z"
-                        fill="url(#pbi_paint2)"
-                      />
+                    <svg className="h-4 w-4 text-[#F2C811] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M3 3h7v7H3zm11 0h7v7h-7zM3 14h7v7H3zm11 0h7v7h-7z"/>
                     </svg>
                     <h4 className="text-lg font-semibold text-foreground flex-1">
                       Power BI
