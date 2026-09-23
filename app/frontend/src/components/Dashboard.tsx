@@ -473,173 +473,211 @@ const Dashboard = ({ onLogout, onGoToAdmin, currentUser }: DashboardProps) => {
         {/* Reports Grid */}
         {filteredReports.length > 0 ? (
           <>
-            {/* Databricks Section — first */}
-            {databricksReports.length > 0 && (
-              <div className="mb-8">
-                <button
-                  onClick={() => setDatabricksCollapsed(c => !c)}
-                  className="w-full flex items-center gap-2 mb-4 border-b pb-2 group text-left"
-                >
-                  <Database className="h-5 w-5 text-orange-500 flex-shrink-0" />
-                  <h3 className="text-xl font-semibold text-foreground flex-1">
-                    Databricks
-                    <span className="text-sm font-normal text-muted-foreground ml-2">
-                      ({databricksReports.length} {databricksReports.length === 1 ? 'dashboard' : 'dashboards'})
-                    </span>
-                  </h3>
-                  {databricksCollapsed
-                    ? <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-                    : <ChevronDown className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-                  }
-                </button>
-                {!databricksCollapsed && (
-                  <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {isLoading
-                        ? Array.from({ length: 3 }).map((_, i) => <ReportSkeleton key={i} />)
-                        : paginatedDatabricks.map(report => {
-                            const request = userRequests.find(r => r.report_id === report.id_report);
-                            return (
-                            <ReportCard
-                              key={report.id_report}
-                              report={{
-                                id: report.id_report,
-                                name: report.name,
-                                description: report.description || '',
-                                group: report.groups?.[0]?.name || report.category || 'Sin grupo',
-                                thumbnail: report.image_url,
-                                workspaceId: report.url || '',
-                                hasAccess: reportsAccess[report.id_report]?.hasAccess || false,
-                                lastAccessed: report.last_view_date || undefined,
-                                updatedAt: report.creation_date,
-                                reportType: 'databricks'
-                              }}
-                              requestStatus={request?.status || 'none'}
-                              currentUser={currentUser}
-                              onViewReport={handleViewReport}
-                              groupViews={report.views}
-                              isFavorite={isFavorite(report.id_report)}
-                              onToggleFavorite={(e) => {
-                                e.stopPropagation();
-                                toggleFavorite(report.id_report);
-                              }}
-                            />
-                          );
-                        })
-                    }
-                    </div>
-                    {totalDatabricksPages > 1 && (
-                      <div className="flex justify-center items-center mt-6 space-x-4">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setDatabricksPage(p => Math.max(1, p - 1))}
-                          disabled={databricksPage === 1}
-                        >
-                          Anterior
-                        </Button>
-                        <span className="text-sm text-muted-foreground">
-                          Página {databricksPage} de {totalDatabricksPages}
-                        </span>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setDatabricksPage(p => Math.min(totalDatabricksPages, p + 1))}
-                          disabled={databricksPage === totalDatabricksPages}
-                        >
-                          Siguiente
-                        </Button>
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            )}
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold w-full border-b pb-2 text-foreground flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                {searchTerm || selectedGroup !== 'all'
+                  ? `Resultados (${filteredReports.length})`
+                  : 'Mis Reportes'
+                }
+              </h3>
+            </div>
 
-            {/* Power BI Section */}
-            {powerbiReports.length > 0 && (
-              <div className="mb-8">
-                <button
-                  onClick={() => setPowerbiCollapsed(c => !c)}
-                  className="w-full flex items-center gap-2 mb-4 border-b pb-2 group text-left"
-                >
-                  <svg className="h-5 w-5 text-[#F2C811] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M3 3h7v7H3zm11 0h7v7h-7zM3 14h7v7H3zm11 0h7v7h-7z"/>
-                  </svg>
-                  <h3 className="text-xl font-semibold text-foreground flex-1">
-                    Power BI
-                    <span className="text-sm font-normal text-muted-foreground ml-2">
-                      ({powerbiReports.length} {powerbiReports.length === 1 ? 'reporte' : 'reportes'})
-                    </span>
-                  </h3>
-                  {powerbiCollapsed
-                    ? <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-                    : <ChevronDown className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-                  }
-                </button>
-                {!powerbiCollapsed && (
-                  <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {isLoading
-                        ? Array.from({ length: 3 }).map((_, i) => <ReportSkeleton key={i} />)
-                        : paginatedPowerbi.map(report => {
-                            const request = userRequests.find(r => r.report_id === report.id_report);
-                            return (
-                            <ReportCard
-                              key={report.id_report}
-                              report={{
-                                id: report.id_report,
-                                name: report.name,
-                                description: report.description || '',
-                                group: report.groups?.[0]?.name || report.category || 'Sin grupo',
-                                thumbnail: report.image_url,
-                                workspaceId: report.url || '',
-                                hasAccess: reportsAccess[report.id_report]?.hasAccess || false,
-                                lastAccessed: report.last_view_date || undefined,
-                                updatedAt: report.creation_date,
-                                reportType: 'powerbi'
-                              }}
-                              requestStatus={request?.status || 'none'}
-                              currentUser={currentUser}
-                              onViewReport={handleViewReport}
-                              groupViews={report.views}
-                              isFavorite={isFavorite(report.id_report)}
-                              onToggleFavorite={(e) => {
-                                e.stopPropagation();
-                                toggleFavorite(report.id_report);
-                              }}
-                            />
-                          );
-                        })
+            {/* Databricks & Power BI Subsections */}
+            <div className="pl-4 md:pl-6 space-y-6">
+              {/* Databricks Section — first */}
+              {databricksReports.length > 0 && (
+                <div>
+                  <button
+                    onClick={() => setDatabricksCollapsed(c => !c)}
+                    className="w-full flex items-center gap-2 mb-4 border-b border-border/70 pb-2 group text-left"
+                  >
+                    <Database className="h-4 w-4 text-orange-500 flex-shrink-0" />
+                    <h4 className="text-lg font-semibold text-foreground flex-1">
+                      Databricks
+                      <span className="text-sm font-normal text-muted-foreground ml-2">
+                        ({databricksReports.length} {databricksReports.length === 1 ? 'dashboard' : 'dashboards'})
+                      </span>
+                    </h4>
+                    {databricksCollapsed
+                      ? <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                      : <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                     }
-                    </div>
-                    {totalPowerbiPages > 1 && (
-                      <div className="flex justify-center items-center mt-6 space-x-4">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setPowerbiPage(p => Math.max(1, p - 1))}
-                          disabled={powerbiPage === 1}
-                        >
-                          Anterior
-                        </Button>
-                        <span className="text-sm text-muted-foreground">
-                          Página {powerbiPage} de {totalPowerbiPages}
-                        </span>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setPowerbiPage(p => Math.min(totalPowerbiPages, p + 1))}
-                          disabled={powerbiPage === totalPowerbiPages}
-                        >
-                          Siguiente
-                        </Button>
+                  </button>
+                  {!databricksCollapsed && (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {isLoading
+                          ? Array.from({ length: 3 }).map((_, i) => <ReportSkeleton key={i} />)
+                          : paginatedDatabricks.map(report => {
+                              const request = userRequests.find(r => r.report_id === report.id_report);
+                              return (
+                              <ReportCard
+                                key={report.id_report}
+                                report={{
+                                  id: report.id_report,
+                                  name: report.name,
+                                  description: report.description || '',
+                                  group: report.groups?.[0]?.name || report.category || 'Sin grupo',
+                                  thumbnail: report.image_url,
+                                  workspaceId: report.url || '',
+                                  hasAccess: reportsAccess[report.id_report]?.hasAccess || false,
+                                  lastAccessed: report.last_view_date || undefined,
+                                  updatedAt: report.creation_date,
+                                  reportType: 'databricks'
+                                }}
+                                requestStatus={request?.status || 'none'}
+                                currentUser={currentUser}
+                                onViewReport={handleViewReport}
+                                groupViews={report.views}
+                                isFavorite={isFavorite(report.id_report)}
+                                onToggleFavorite={(e) => {
+                                  e.stopPropagation();
+                                  toggleFavorite(report.id_report);
+                                }}
+                              />
+                            );
+                          })
+                      }
                       </div>
-                    )}
-                  </>
-                )}
-              </div>
-            )}
+                      {totalDatabricksPages > 1 && (
+                        <div className="flex justify-center items-center mt-6 space-x-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setDatabricksPage(p => Math.max(1, p - 1))}
+                            disabled={databricksPage === 1}
+                          >
+                            Anterior
+                          </Button>
+                          <span className="text-sm text-muted-foreground">
+                            Página {databricksPage} de {totalDatabricksPages}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setDatabricksPage(p => Math.min(totalDatabricksPages, p + 1))}
+                            disabled={databricksPage === totalDatabricksPages}
+                          >
+                            Siguiente
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* Power BI Section */}
+              {powerbiReports.length > 0 && (
+                <div>
+                  <button
+                    onClick={() => setPowerbiCollapsed(c => !c)}
+                    className="w-full flex items-center gap-2 mb-4 border-b border-border/70 pb-2 group text-left"
+                  >
+                    <svg className="h-4 w-4 flex-shrink-0" viewBox="0 0 1200 1600" fill="none">
+                      <defs>
+                        <linearGradient id="pbi_paint0" x1="650" y1="0" x2="1200" y2="1600" gradientUnits="userSpaceOnUse">
+                          <stop stopColor="#E6AD10" />
+                          <stop offset="1" stopColor="#C87E0E" />
+                        </linearGradient>
+                        <linearGradient id="pbi_paint1" x1="325" y1="400" x2="875" y2="1600" gradientUnits="userSpaceOnUse">
+                          <stop stopColor="#F6D751" />
+                          <stop offset="1" stopColor="#E6AD10" />
+                        </linearGradient>
+                        <linearGradient id="pbi_paint2" x1="0" y1="800" x2="550" y2="1600" gradientUnits="userSpaceOnUse">
+                          <stop stopColor="#F9E589" />
+                          <stop offset="1" stopColor="#F6D751" />
+                        </linearGradient>
+                      </defs>
+                      <path
+                        d="M 1200,66.75 v 1466.5 c 0,36.86 -29.89,66.75 -66.75,66.75 H 716.75 C 679.885,1600 650,1570.11 650,1533.25 V 66.75 C 650,29.885 679.885,0 716.75,0 h 416.5 c 36.87,0 66.75,29.8849 66.75,66.75 z"
+                        fill="url(#pbi_paint0)"
+                      />
+                      <path
+                        d="M 875,466.667 V 1600 H 325 V 466.667 C 325,429.848 354.848,400 391.667,400 h 416.663 c 36.82,0 66.67,29.848 66.67,66.667 z"
+                        fill="url(#pbi_paint1)"
+                      />
+                      <path
+                        d="m 0,866.667 v 666.663 c 0,36.82 29.848,66.67 66.667,66.67 H 550 V 866.667 C 550,829.848 520.152,800 483.333,800 H 66.667 C 29.848,800 0,829.848 0,866.667 Z"
+                        fill="url(#pbi_paint2)"
+                      />
+                    </svg>
+                    <h4 className="text-lg font-semibold text-foreground flex-1">
+                      Power BI
+                      <span className="text-sm font-normal text-muted-foreground ml-2">
+                        ({powerbiReports.length} {powerbiReports.length === 1 ? 'reporte' : 'reportes'})
+                      </span>
+                    </h4>
+                    {powerbiCollapsed
+                      ? <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                      : <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                    }
+                  </button>
+                  {!powerbiCollapsed && (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {isLoading
+                          ? Array.from({ length: 3 }).map((_, i) => <ReportSkeleton key={i} />)
+                          : paginatedPowerbi.map(report => {
+                              const request = userRequests.find(r => r.report_id === report.id_report);
+                              return (
+                              <ReportCard
+                                key={report.id_report}
+                                report={{
+                                  id: report.id_report,
+                                  name: report.name,
+                                  description: report.description || '',
+                                  group: report.groups?.[0]?.name || report.category || 'Sin grupo',
+                                  thumbnail: report.image_url,
+                                  workspaceId: report.url || '',
+                                  hasAccess: reportsAccess[report.id_report]?.hasAccess || false,
+                                  lastAccessed: report.last_view_date || undefined,
+                                  updatedAt: report.creation_date,
+                                  reportType: 'powerbi'
+                                }}
+                                requestStatus={request?.status || 'none'}
+                                currentUser={currentUser}
+                                onViewReport={handleViewReport}
+                                groupViews={report.views}
+                                isFavorite={isFavorite(report.id_report)}
+                                onToggleFavorite={(e) => {
+                                  e.stopPropagation();
+                                  toggleFavorite(report.id_report);
+                                }}
+                              />
+                            );
+                          })
+                      }
+                      </div>
+                      {totalPowerbiPages > 1 && (
+                        <div className="flex justify-center items-center mt-6 space-x-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPowerbiPage(p => Math.max(1, p - 1))}
+                            disabled={powerbiPage === 1}
+                          >
+                            Anterior
+                          </Button>
+                          <span className="text-sm text-muted-foreground">
+                            Página {powerbiPage} de {totalPowerbiPages}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPowerbiPage(p => Math.min(totalPowerbiPages, p + 1))}
+                            disabled={powerbiPage === totalPowerbiPages}
+                          >
+                            Siguiente
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* Empty state */}
             {!isLoading && powerbiReports.length === 0 && databricksReports.length === 0 && (
